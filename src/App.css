@@ -1,0 +1,100 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.LogoBottom{
+  margin-bottom: 1em;
+}
+
+.errorMsg {
+  color: #cc0000;
+  margin-bottom: 12px;
+}
+
+.sucessMsg {
+  color: #6B8E23;
+  margin-bottom: 10px;
+}
+.paper {
+  margin-top:8em;
+  display: 'flex';
+  flex-direction: 'column';
+  align-items: 'center';
+  border-radius: 8px;
+}
+.backClr{
+  background-color: #7a7a7c !important;
+}
+.UploadFile{
+  height: 25px !important;
+  width: 29%;
+  margin-top: 2em;
+  margin-left: 5em;
+}
+.css-67bhig-MuiTableCell-root.MuiTableCell-head {
+  background-color: #1976d2 !important;
+  color: #fff !important;
+}
+
+.css-i02g0k-MuiTableCell-root{
+  background-color: #1976d2 !important;
+  color: #fff !important;
+}
+
+.css-y8ay40-MuiTableCell-root{
+  background-color: #1976d2 !important;
+  color: #fff !important;
+}
+@import url("https://cdn.syncfusion.com/ej2/material.css");
+
+.e-calendar .e-content.e-month td, .e-bigger.e-small .e-calendar .e-content.e-month td {
+  height: 10px;
+  padding: 0px;
+}
+.e-calendar, .e-bigger.e-small .e-calendar {
+  max-width: 240px;
+  min-width: 227px;
+  padding: 0;
+}
+.e-daterangepicker.e-popup, .e-bigger.e-small .e-daterangepicker.e-popup {
+  border: none;
+  border-radius: 0;
+  box-shadow: 0 5px 5px -3px rgb(0 0 0 / 20%), 0 8px 10px 1px rgb(0 0 0 / 14%), 0 3px 14px 2px rgb(0 0 0 / 12%);
+  max-height: 465px;
+  max-width: 455px;
+}
