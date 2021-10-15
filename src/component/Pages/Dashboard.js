@@ -15,6 +15,7 @@ import Navbar from '../login/Navbar';
 import Upload from '../Pages/Upload';
 import ExportTabeBtn from '../Pages/ExportTableBtn';
 import DateRangePicker from '../Pages/DateRangePicker';
+import axios from 'axios';
 
 const columns = [
   { id: 'Date', field: 'date', label: 'Date', format: ('DD/MM/YYYY') },
@@ -42,47 +43,49 @@ const Item = styled(Paper)(({ theme }) => ({
   color: theme.palette.text.secondary,
 }));
 
+
+function TablePaginationActions(props) {
+  console.log(props)
+  return null;
+}
+
 export default function StickyHeadTable() {
-  const [page, setPage] = React.useState(0);
-  const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [rows, setRows] = useState([]);
 
-
-  const fetchInventory = () => {
-    fetch('/productInfo/findAllRecordDate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: '07-08-2021'
-    })
-      .then(async response => {
-        const isJson = response.headers.get('content-type')?.includes('application/json');
-        const data = isJson && await response.json();
-
+  const fetchInventory = async () => {
+    await axios.post('/productInfo/findAllRecordDate',{body: '07-08-2021'})
+    .then(response => {
+        // const isJson = response.headers.get('content-type')?.includes('application/json');
+        const data = response.data
+        console.log(3)
         // check for error response
         if (!response.ok) {
           // get error message from body or default to response status
           const error = (data && data.message) || response.status;
         }
-        console.log(data);
         for (var i = 0; i < data.length; i++) {
-
           rows.push(createData(data[i].date, data[i].productName, data[i].producer, data[i].grade, data[i].category, data[i].tradingMode, data[i].market, data[i].price, data[i].unitType, ''));
         }
-        
+        console.log('rows',rows)
+        console.log(page)
         setRows(rows);
-        return rows;
-        // data.forEach(element => {
-        //   rows=rows + createData(element.id,element.productName,element.producer,element.grade,element.category,element.tradingMode,element.market,element.price,element.unitType,'');
-        // });
+        setMycount(rows.length)
 
       })
   };
-
-  useEffect(() => {
-      fetchInventory();
-  }, []);
+  
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const [rows, setRows] = useState([]);
+  const [mycount,setMycount]= useState(0);
+  
+  useEffect(async() => {
+    console.log(1)
+    await fetchInventory();
+    console.log(2)
+}, []);
 
   const handleChangePage = (event, newPage) => {
+    console.log(newPage)
     setPage(newPage);
   };
 
@@ -95,6 +98,7 @@ export default function StickyHeadTable() {
   let GridStyle = { boxShadow: "none" }
 
   return (
+    
     <div>
       <Navbar />
       <Upload />
@@ -159,6 +163,7 @@ export default function StickyHeadTable() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
+            ActionsComponent={TablePaginationActions}
           />
         </Paper>
       </div>

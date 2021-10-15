@@ -1,11 +1,12 @@
 import { List } from '@material-ui/core';
+import Dashboard from '../Pages/Dashboard';
 import React, { Component } from 'react';
 import { CSVReader } from 'react-papaparse';
 // let UploadFile = {height:"5em",marginLeft:"39%",width:"2em"}
 const UploadStyle = {marginTop:'2em',marginLeft:'2em',marginRight:'2em',backgroundColor:"#f2f0f0",borderRadius:"1em"}
 
 export default class CSVReader2 extends Component {
-  handleOnDrop = (data) => {
+  handleOnDrop = async (data) => {
     debugger;
     let jsonbody=[];
     for(var i=1;i<data.length;i++){
@@ -16,7 +17,7 @@ export default class CSVReader2 extends Component {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(jsonbody)
     };
-    fetch('/productInfo/saveProductInfo', requestOptions)
+    await fetch('/productInfo/saveProductInfo', requestOptions)
     .then(async response => {
       const isJson = response.headers.get('content-type')?.includes('application/json');
       const data = isJson && await response.json();
@@ -33,6 +34,7 @@ export default class CSVReader2 extends Component {
       this.setState({ errorMessage: error.toString() });
       console.error('There was an error!', error);
     });
+    window.location.reload();
   };
 
   handleOnError = (err, file, inputElem, reason) => {
@@ -51,8 +53,7 @@ export default class CSVReader2 extends Component {
         <CSVReader onDrop={this.handleOnDrop}    onError={this.handleOnError} addRemoveButton onRemoveFile={this.handleOnRemoveFile}>
           <span>Drop CSV file here or click to upload.</span>
         </CSVReader>
-
-        
+       
       </div>
     );
   }
