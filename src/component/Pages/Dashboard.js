@@ -14,8 +14,9 @@ import TableRow from '@mui/material/TableRow';
 import Navbar from '../login/Navbar';
 import Upload from '../Pages/Upload';
 import ExportTabeBtn from '../Pages/ExportTableBtn';
-import DateRangePicker from '../Pages/DateRangePicker';
+// import DateRangePicker from '../Pages/DateRangePicker';
 import axios from 'axios';
+import { DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 
 const columns = [
   { id: 'Date', field: 'date', label: 'Date', format: ('DD/MM/YYYY') },
@@ -49,11 +50,17 @@ function TablePaginationActions(props) {
   return null;
 }
 
+
 export default function StickyHeadTable() {
+  const startValue = new Date(new Date().getFullYear(), new Date().getMonth(), 4);
+  const endValue = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 15);
+  const minDate  = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()-30);
+
+  const maxDate = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
 
   const fetchInventory = async () => {
-    await axios.post('/productInfo/findAllRecordDate',{body: '07-08-2021'})
-    .then(response => {
+    await axios.post('/productInfo/findAllRecordDate', { body: '07-08-2021' })
+      .then(response => {
         // const isJson = response.headers.get('content-type')?.includes('application/json');
         const data = response.data
         console.log(3)
@@ -65,24 +72,24 @@ export default function StickyHeadTable() {
         for (var i = 0; i < data.length; i++) {
           rows.push(createData(data[i].date, data[i].productName, data[i].producer, data[i].grade, data[i].category, data[i].tradingMode, data[i].market, data[i].price, data[i].unitType, ''));
         }
-        console.log('rows',rows)
+        console.log('rows', rows)
         console.log(page)
         setRows(rows);
         setMycount(rows.length)
 
       })
   };
-  
+
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [rows, setRows] = useState([]);
-  const [mycount,setMycount]= useState(0);
-  
-  useEffect(async() => {
+  const [mycount, setMycount] = useState(0);
+
+  useEffect(async () => {
     console.log(1)
     await fetchInventory();
     console.log(2)
-}, []);
+  }, []);
 
   const handleChangePage = (event, newPage) => {
     console.log(newPage)
@@ -94,11 +101,19 @@ export default function StickyHeadTable() {
     setPage(0);
   };
 
+  const onChange = (props) => {
+    const startDate = props.value;
+    const endDate = props.endDate;
+    console.log('startDate',startDate);
+    console.log('endDate',endDate);
+};
+
+
   let TbleStyle = { marginTop: "2em", marginLeft: "2.5em", marginRight: "2.3em" }
   let GridStyle = { boxShadow: "none" }
 
   return (
-    
+
     <div>
       <Navbar />
       <Upload />
@@ -107,7 +122,21 @@ export default function StickyHeadTable() {
 
         <Grid container spacing={2} direction="row" justifyContent="flex-end" alignItems="center">
           <Grid item xs={6} md={4} >
-            <Item style={GridStyle}><DateRangePicker /></Item>
+            <Item style={GridStyle}>
+              <DateRangePickerComponent placeholder="Enter Date Range"
+                startDate={startValue}
+                endDate={endValue}
+                min={minDate}
+                max={maxDate}
+                minDays={0}
+                maxDays={30}
+                format="dd-MM-yyyy"
+                change={onChange}
+              //Uncomment below code to show month range picker. Also comment the properties min, max, mindays and maxdays
+              // start="Year"
+              // depth="Year"
+              ></DateRangePickerComponent>
+            </Item>
           </Grid>
           <Grid item xs={6} md={2} style={GridStyle}>
             <Item style={GridStyle}><ExportTabeBtn /></Item>
@@ -119,7 +148,7 @@ export default function StickyHeadTable() {
             <Table stickyHeader aria-label="sticky table" >
               <TableHead>
                 <TableRow>
-                  
+
                   {columns.map((column) => (
                     <TableCell
                       key={column.id}
