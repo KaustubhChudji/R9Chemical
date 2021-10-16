@@ -45,25 +45,25 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 
-function TablePaginationActions(props) {
-  console.log(props)
-  return null;
-}
 
 
 export default function StickyHeadTable() {
-  const startValue = new Date(new Date().getFullYear(), new Date().getMonth(), 4);
-  const endValue = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 15);
-  const minDate  = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate()-30);
+  const startValue = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+  const endValue = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+  const minDate = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate() - 30);
 
   const maxDate = new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
 
   const fetchInventory = async () => {
-    await axios.post('/productInfo/findAllRecordDate', { body: '07-08-2021' })
-      .then(response => {
-        // const isJson = response.headers.get('content-type')?.includes('application/json');
-        const data = response.data
-        console.log(3)
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: ' '
+    };
+    await fetch('/productInfo/findAllRecordDate', requestOptions)
+      .then(async response => {
+        const isJson = response.headers.get('content-type')?.includes('application/json');
+        const data = isJson && await response.json();
         // check for error response
         if (!response.ok) {
           // get error message from body or default to response status
@@ -86,13 +86,41 @@ export default function StickyHeadTable() {
   const [mycount, setMycount] = useState(0);
 
   useEffect(async () => {
-    console.log(1)
     await fetchInventory();
-    console.log(2)
   }, []);
 
+  const onChange = (props) => {
+
+    if (props.event && props.event.target.classList.contains("e-apply")) {
+      const startDate = props.startDate.getDate() + '-' + props.startDate.getMonth() + '-' + props.startDate.getFullYear();
+      const endDate =props.endDate.getDate() + '-' + props.endDate.getMonth() + '-' + props.endDate.getFullYear();
+      let productFilter= { 'recordStartDate': startDate, 'recordEndDate': endDate };
+      const requestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productFilter)
+      }
+      
+      setRows([]);
+      let rows=[];
+
+      fetch('/productInfo/findAllRecordDateBetween', requestOptions)
+        .then(async response => {
+          const isJson = response.headers.get('content-type')?.includes('application/json');
+          const data = isJson && await response.json();
+
+          if (!response.ok) {
+            const error = (data && data.message) || response.status;
+          }
+          for (var i = 0; i < data.length; i++) {
+            rows.push(createData(data[i].date, data[i].productName, data[i].producer, data[i].grade, data[i].category, data[i].tradingMode, data[i].market, data[i].price, data[i].unitType, ''));
+          }
+          setRows(rows);
+          setMycount(rows.length);          
+        })
+    }
+  };
   const handleChangePage = (event, newPage) => {
-    console.log(newPage)
     setPage(newPage);
   };
 
@@ -100,14 +128,6 @@ export default function StickyHeadTable() {
     setRowsPerPage(+event.target.value);
     setPage(0);
   };
-
-  const onChange = (props) => {
-    const startDate = props.value;
-    const endDate = props.endDate;
-    console.log('startDate',startDate);
-    console.log('endDate',endDate);
-};
-
 
   let TbleStyle = { marginTop: "2em", marginLeft: "2.5em", marginRight: "2.3em" }
   let GridStyle = { boxShadow: "none" }
@@ -123,7 +143,7 @@ export default function StickyHeadTable() {
         <Grid container spacing={2} direction="row" justifyContent="flex-end" alignItems="center">
           <Grid item xs={6} md={4} >
             <Item style={GridStyle}>
-              <DateRangePickerComponent placeholder="Enter Date Range"
+              <DateRangePickerComponent id="datepicker" placeholder="Enter Date Range"
                 startDate={startValue}
                 endDate={endValue}
                 min={minDate}
@@ -132,9 +152,6 @@ export default function StickyHeadTable() {
                 maxDays={30}
                 format="dd-MM-yyyy"
                 change={onChange}
-              //Uncomment below code to show month range picker. Also comment the properties min, max, mindays and maxdays
-              // start="Year"
-              // depth="Year"
               ></DateRangePickerComponent>
             </Item>
           </Grid>
@@ -192,7 +209,6 @@ export default function StickyHeadTable() {
             page={page}
             onPageChange={handleChangePage}
             onRowsPerPageChange={handleChangeRowsPerPage}
-            ActionsComponent={TablePaginationActions}
           />
         </Paper>
       </div>
